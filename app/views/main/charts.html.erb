@@ -1,0 +1,8 @@
+<h1>CHARTS FOR DAYS</h1>
+
+<%= render partial: "shared/search_form" %>	
+
+<% @contracts.each do |c| %>
+	<%= c.player.name %>.......................<%= number_to_currency(c.salary, precision: 0) %>
+	<br>
+<% end %>
