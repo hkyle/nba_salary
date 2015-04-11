@@ -1,0 +1,3 @@
+# View all contracts by team
+# Compare aggregate team contracts by year
+# Implement HighCharts

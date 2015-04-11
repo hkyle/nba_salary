@@ -6,3 +6,9 @@
 	<%= c.player.name %>.......................<%= number_to_currency(c.salary, precision: 0) %>
 	<br>
 <% end %>
+
+
+<% @contracts.each do |c| %>
+	<%= c.team.abbr %>.......................<%= number_to_currency(c.salary, precision: 0) %>
+	<br>
+<% end %>

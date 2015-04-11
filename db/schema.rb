@@ -11,13 +11,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150409181426) do
+ActiveRecord::Schema.define(version: 20150411180448) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "contracts", force: true do |t|
     t.integer  "player_id"
+    t.integer  "team_id"
     t.string   "year"
     t.decimal  "salary"
     t.datetime "created_at"
@@ -25,10 +26,16 @@ ActiveRecord::Schema.define(version: 20150409181426) do
   end
 
   add_index "contracts", ["player_id"], name: "index_contracts_on_player_id", using: :btree
+  add_index "contracts", ["team_id"], name: "index_contracts_on_team_id", using: :btree
 
   create_table "players", force: true do |t|
     t.string   "name"
-    t.string   "team"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "teams", force: true do |t|
+    t.string   "abbr"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
