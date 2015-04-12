@@ -2,13 +2,13 @@
 
 <%= render partial: "shared/search_form" %>	
 
-<% @contracts.each do |c| %>
-	<%= c.player.name %>.......................<%= number_to_currency(c.salary, precision: 0) %>
+<% Team.all.each do |x|%>
+	<%= x.abbr %> ........... <%= number_to_currency(x.contracts.year(params[:year]).sum(:salary), precision: 0) %>
 	<br>
 <% end %>
 
 
 <% @contracts.each do |c| %>
-	<%= c.team.abbr %>.......................<%= number_to_currency(c.salary, precision: 0) %>
+	<%= c.player.name %>.......................<%= number_to_currency(c.salary, precision: 0) %>
 	<br>
 <% end %>

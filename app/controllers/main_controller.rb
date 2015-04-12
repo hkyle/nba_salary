@@ -1,6 +1,6 @@
 class MainController < ApplicationController
   def index
-    Scraper.scrape_salaries
+    #Scraper.scrape_salaries
   end
   
   def charts
