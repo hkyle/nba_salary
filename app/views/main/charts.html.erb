@@ -2,13 +2,57 @@
 
 <%= render partial: "shared/search_form" %>	
 
-<% Team.all.each do |x|%>
-	<%= x.abbr %> ........... <%= number_to_currency(x.contracts.year(params[:year]).sum(:salary), precision: 0) %>
-	<br>
-<% end %>
+<div id="container" style="width:100%; height:600px;"></div>
 
-
-<% @contracts.each do |c| %>
-	<%= c.player.name %>.......................<%= number_to_currency(c.salary, precision: 0) %>
-	<br>
-<% end %>
+<script>
+$(function () { 
+    $('#container').highcharts({
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Team Salary'
+        },
+        xAxis: {
+            type: 'category'
+        },
+        yAxis: {
+            title: {
+                text: 'Salary'
+            }
+        },
+        
+         series: [{
+            name: 'Teams',
+            colorByPoint: true,
+            data: [
+            <% @team_data.each_with_index do |t, i| %>{
+                name: '<%= t.abbr %>',
+                y: <%= t.contracts.year(params[:year]).sum(:salary).floor %>,
+                drilldown: '<%= t.abbr %>'
+            }<% if i != @team_data.size - 1 %>,<% end %>
+            <%end%>
+            ]
+        }],
+        
+        drilldown: {
+        	animation: {
+		        duration: 500
+		    },
+            series: [
+            <% @team_data.each_with_index do |t, i| %>{
+                id: '<%= t.abbr %>',
+                type: 'pie',
+                data:[ 
+                <% t.contracts.year(params[:year]).each_with_index do |c, ix| %>
+                	["<%== c.player.name%>", <%=c.salary.floor%>]<% if ix != t.contracts.size - 1 %>,<% end %>
+                    <% end %>
+                    ]
+                    
+            }<% if i != @team_data.size - 1 %>,<% end %>
+            <%end%>
+            ]
+        }
+    });
+});
+</script>
