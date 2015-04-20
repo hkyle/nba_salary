@@ -1,7 +1,8 @@
 Rails.application.routes.draw do
   root 'main#index'
   
-  match '/charts',   to: 'main#charts',   via: 'get'
+  match '/league_chart',   to: 'main#league_chart',   via: 'get'
+  match '/compare_chart',   to: 'main#compare_chart',   via: 'get'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

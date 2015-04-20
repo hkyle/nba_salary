@@ -1,4 +1,11 @@
-<%= form_tag("/charts", method: "get") do %>
+<%= form_tag("/league_chart", method: "get") do %>
+  <%= select_tag(:year, options_for_select(Contract.uniq.pluck(:year).sort, params[:year]))%>
+  <%= submit_tag("Go!", :name => '') %>
+<% end %>
+
+<%= form_tag("/compare_chart", method: "get") do %>
+  <%= select_tag(:team1, options_for_select(Team.uniq.pluck(:abbr).sort))%>
+  <%= select_tag(:team2, options_for_select(Team.uniq.pluck(:abbr).sort))%>
   <%= select_tag(:year, options_for_select(Contract.uniq.pluck(:year).sort, params[:year]))%>
   <%= submit_tag("Go!", :name => '') %>
 <% end %>
