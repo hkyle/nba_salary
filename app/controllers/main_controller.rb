@@ -5,13 +5,13 @@ class MainController < ApplicationController
   
   def compare_chart
     @chart = CompareChart.new(
-                      {year: params[:year], type: 'compare', teams: [params[:team1], params[:team2]]}
+                      {year: params[:year], teams: [params[:team1], params[:team2]]}
                       )
   end
   
   def league_chart
     @chart = LeagueChart.new(
-                      {year: params[:year], type: 'league'}
+                      {year: params[:year]}
                       )
   end
 end

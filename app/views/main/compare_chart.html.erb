@@ -56,12 +56,7 @@ $(function () {
             }
         },    
          series: [
-         <% @chart.teams.sort_by{|t| @chart.teams_arr.flatten.index(t.abbr)}.each_with_index do |t, i| %>
-            	<% t.contracts.year(params[:year]).each_with_index do |c, ix| %>{
-                name: '<%== c.player.name%>',
-                data: <% if i == 0%>[<%=c.salary.floor%>, null]<%else%>[null,<%=c.salary.floor%>]<% end %>}<% if ix != t.contracts.year(params[:year]).size - 1 or i == 0%>,<% end %>
-                    <% end %>
-            <%end%>
+         	<%== @chart.series_data %>
         ]
     });
 });
