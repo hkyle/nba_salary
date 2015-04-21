@@ -5,12 +5,8 @@ class CompareChart < Chart
     @contracts = Contract.year(@year).where(team_id: teams.map{|t| t.id})
   end
   
-  def teams_arr
-    @teams
-  end
-  
   def teams
-      Team.teams(@teams).sort_by{|t| teams_arr.flatten.index(t.abbr)} #keep them in the params' order
+      Team.teams(@teams_arr).sort_by{|t| @teams_arr.flatten.index(t.abbr)} #keep them in the params' order
   end
   
   def main_chart
@@ -21,11 +17,11 @@ class CompareChart < Chart
     output = ''
 
               @contracts.each_with_index do |c, ix|
-                output = output+"{\n  name: '"+ c.player.name + "',\n data: "+
+                output = output + "{ name: '" + c.player.name.gsub("'", %q(\\\')) + "',\n  data: "+
                 if c.team == teams.first
-                  '['+c.salary.floor.to_s+", null]\n}"
+                  '['+c.salary.floor.to_s+", null] }"
                 else
-                  '[null,'+c.salary.floor.to_s+"]\n}"
+                  '[null,'+c.salary.floor.to_s+"] }"
                 end
                 
                 if c != @contracts.last

@@ -30,34 +30,14 @@ $(function () {
             }
         },     
          series: [{
-            name: 'Teams',
-            colorByPoint: true,
-            data: [
-            <% @chart.teams.each_with_index do |t, i| %>{
-                name: '<%= t.abbr %>',
-                y: <%= t.contracts.year(params[:year]).sum(:salary).floor %>,
-                drilldown: '<%= t.abbr %>'
-            }<% if i != @chart.teams.size - 1 %>,<% end %>
-            <%end%>
-            ]
+         	<%== @chart.series_data %>
         }],
         
         drilldown: {
         	animation: {
 		        duration: 500
 		    },
-            series: [
-            <% @chart.teams.each_with_index do |t, i| %>{
-                id: '<%= t.abbr %>',
-                type: '<%= @chart.drill_chart %>',
-                data:[ 
-                <% t.contracts.year(params[:year]).each_with_index do |c, ix| %>
-                	["<%== c.player.name%>", <%=c.salary.floor%>]<% if ix != t.contracts.size - 1 %>,<% end %>
-                    <% end %>
-                    ]
-                    
-            }<% if i != @chart.teams.size - 1 %>,<% end %>
-            <%end%>
+            series: [<%== @chart.drilldown_data %>
             ]
         }
     });
