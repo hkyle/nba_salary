@@ -9,3 +9,8 @@
   <%= select_tag(:year, options_for_select(Contract.uniq.pluck(:year).sort, params[:year]))%>
   <%= submit_tag("Go!", :name => '') %>
 <% end %>
+
+<%= form_tag("/stats_chart", method: "get") do %>
+  <%= select_tag(:stat, options_for_select(['PER', 'WS'], params[:stat]))%>
+  <%= submit_tag("Go!", :name => '') %>
+<% end %>

@@ -1,5 +1,6 @@
 class Chart
   attr_reader :teams_arr
+  attr_reader :year
   
   def initialize(params)
     @year = params[:year]

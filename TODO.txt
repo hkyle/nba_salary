@@ -1,3 +1,2 @@
-# Order compare team select so label always matches
-# View all player salary (scatter plot)
-# Scrape PER and WS
+#escape player name function
+#crosswalk the advanced stats

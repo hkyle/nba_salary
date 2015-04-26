@@ -1,6 +1,6 @@
 class MainController < ApplicationController
   def index
-    #Scraper.scrape_salaries
+    #Scraper.scrape_stats
   end
   
   def compare_chart
@@ -12,6 +12,12 @@ class MainController < ApplicationController
   def league_chart
     @chart = LeagueChart.new(
                       {year: params[:year]}
+                      )
+  end
+  
+  def stats_chart
+    @chart = StatChart.new(
+                      {year: '2014-2015', stat: params[:stat]}
                       )
   end
 end
