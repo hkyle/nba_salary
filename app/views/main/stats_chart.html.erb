@@ -28,7 +28,7 @@ $(function () {
         },
         yAxis: {
             title: {
-                text: '<%= @chart.stat.upcase %>'
+                text: '<%= StatChart.stat_list.find{|s| s[:val] == @chart.stat}[:text] %>'
             }
         },
         legend: {

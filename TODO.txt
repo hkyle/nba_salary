@@ -1,2 +1,1 @@
 #escape player name function
-#crosswalk the advanced stats

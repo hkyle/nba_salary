@@ -11,6 +11,6 @@
 <% end %>
 
 <%= form_tag("/stats_chart", method: "get") do %>
-  <%= select_tag(:stat, options_for_select(['PER', 'WS'], params[:stat]))%>
+  <%= select_tag(:stat, options_for_select(StatChart.stat_list.collect {|p| [ p[:text], p[:val] ] }, params[:stat]))%>
   <%= submit_tag("Go!", :name => '') %>
 <% end %>
