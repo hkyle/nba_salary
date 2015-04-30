@@ -1,4 +1,5 @@
 class CompareChart < Chart
+  attr_reader :stat
   
   def initialize(params)
     super
@@ -13,23 +14,4 @@ class CompareChart < Chart
       'bar'
   end
 
-  def series_data
-    output = ''
-
-              @contracts.each_with_index do |c, ix|
-                output = output + "{ name: '" + c.player.name.gsub("'", %q(\\\')) + "',\n  data: "+
-                if c.team == teams.first
-                  '['+c.salary.floor.to_s+", null] }"
-                else
-                  '[null,'+c.salary.floor.to_s+"] }"
-                end
-                
-                if c != @contracts.last
-                  output = output+",\n"
-               end 
-
-    end
-    
-    output
-  end
 end
