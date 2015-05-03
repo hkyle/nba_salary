@@ -9,6 +9,10 @@ module MainHelper
     end
   end
   
+  def groom_name(name)
+    name.gsub("'", %q(\\\'))
+  end
+  
   def drilldown_data
     if @chart.class == LeagueChart
       league_drilldown
@@ -24,7 +28,7 @@ module MainHelper
                 "data:[ "
                 
              t.contracts.year(@chart.year).each_with_index do |c, ix|
-             output = output + "['" + c.player.name.gsub("'", %q(\\\')) + "' , " + c.salary.floor.to_s + "]"
+             output = output + "['" + groom_name(c.player.name) + "' , " + c.salary.floor.to_s + "]"
              
                if ix != t.contracts.year(@chart.year).size - 1
                     output = output + ",\n"
@@ -45,7 +49,7 @@ module MainHelper
     output = ''
 
         @chart.contracts.each_with_index do |c, ix|
-          output = output + "{ name: '" + c.player.name.gsub("'", %q(\\\')) + "',\n  data: "+
+          output = output + "{ name: '" + groom_name(c.player.name) + "',\n  data: "+
           if c.team == @chart.teams.first
              '['+c.salary.floor.to_s+", null] }"
           else
@@ -89,7 +93,7 @@ module MainHelper
               t.contracts.year(@chart.year).each_with_index do |c, ix|
               if !c.player.advanced_stats.where('mp > ?', 200).first.nil?
                   output = output + 
-                  " { name: '#{c.player.name.gsub("'", %q(\\\'))} (#{c.team.abbr})',\n" + 
+                  " { name: '#{groom_name(c.player.name)} (#{c.team.abbr})',\n" + 
                   "x: #{c.salary.floor.to_s},\n" + 
                   "y: #{c.player.advanced_stats.first[@chart.stat].to_s}},\n"
               end
