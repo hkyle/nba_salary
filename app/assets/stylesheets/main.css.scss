@@ -1,3 +1,35 @@
 // Place all the styles related to the main controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+$font_family: 'Caudex', serif;
+
+h1 {
+  text-align: center;
+  font-family: $font_family;
+}
+
+html body {
+  font-family: $font_family;
+  font-size: $font-size-large;
+}
+
+p {
+  font-size: $font-size-large;
+}
+
+.center {
+  text-align: center;
+}
+
+.foot {
+   position:fixed;
+   left:0px;
+   bottom:0px;
+   height:30px;
+   width:100%;
+}
+
+.search-form{
+  margin-bottom: 50px;
+  margin-top: 10px;
+}

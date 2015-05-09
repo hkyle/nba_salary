@@ -15,6 +15,10 @@ class StatChart < Chart
     list.sort_by{ |l| l[:text]}
   end
   
+  def stat_text
+    StatChart.stat_list.find{|s| s[:val] == @stat}[:text]
+  end
+  
   def teams
       Team.all.order(:abbr)
   end

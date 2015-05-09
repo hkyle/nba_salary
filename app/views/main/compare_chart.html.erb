@@ -1,4 +1,4 @@
-<h1>CHARTS FOR TEAM</h1>
+<h1>Compare <%= @chart.teams[0].abbr %> and <%= @chart.teams[1].abbr %></h1>
 
 <%= render partial: "shared/search_form" %>	
 
@@ -11,7 +11,7 @@ $(function () {
             type: '<%= @chart.main_chart %>'
         },
         title: {
-            text: 'Salary Compare'
+            text: 'Salary Comparison'
         },
         xAxis: {
             categories: <%== @chart.teams_arr %>
