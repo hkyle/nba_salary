@@ -30,7 +30,16 @@ $(function () {
                     fontWeight: 'bold',
                     color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
                 }
-            }
+            },
+            plotLines: [{
+            color: '#000000',
+            width: 2,
+            value: <%= Contract.salary_cap(params[:year])[0]%>, // Need to set this probably as a var.
+            label: { 
+			    text: 'Salary Cap', // Content of the label. 
+			    align: 'left' // Positioning of the label. 
+			  }
+        	}]
         },
         legend: {
         	align: "center"
