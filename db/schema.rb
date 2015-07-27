@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150424132427) do
+ActiveRecord::Schema.define(version: 20150727162810) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -49,6 +49,37 @@ ActiveRecord::Schema.define(version: 20150424132427) do
 
   add_index "advanced_stats", ["player_id"], name: "index_advanced_stats_on_player_id", using: :btree
 
+  create_table "boxscores", force: true do |t|
+    t.integer  "player_id"
+    t.datetime "game_date"
+    t.string   "player_name"
+    t.integer  "minutes"
+    t.integer  "seconds"
+    t.decimal  "fgm"
+    t.decimal  "fga"
+    t.decimal  "fg_pct"
+    t.decimal  "tpm"
+    t.decimal  "tpa"
+    t.decimal  "tp_pct"
+    t.decimal  "ftm"
+    t.decimal  "fta"
+    t.decimal  "ft_pct"
+    t.decimal  "orb"
+    t.decimal  "drb"
+    t.decimal  "trb"
+    t.decimal  "assists"
+    t.decimal  "steals"
+    t.decimal  "blocks"
+    t.decimal  "tov"
+    t.decimal  "pf"
+    t.decimal  "points"
+    t.integer  "plus_minus"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "boxscores", ["player_id"], name: "index_boxscores_on_player_id", using: :btree
+
   create_table "contracts", force: true do |t|
     t.integer  "player_id"
     t.integer  "team_id"
@@ -61,6 +92,24 @@ ActiveRecord::Schema.define(version: 20150424132427) do
   add_index "contracts", ["player_id"], name: "index_contracts_on_player_id", using: :btree
   add_index "contracts", ["team_id"], name: "index_contracts_on_team_id", using: :btree
 
+  create_table "games", force: true do |t|
+    t.datetime "game_date"
+    t.string   "home_team"
+    t.integer  "home_wins"
+    t.integer  "home_losses"
+    t.integer  "home_score"
+    t.string   "away_team"
+    t.integer  "away_wins"
+    t.integer  "away_losses"
+    t.integer  "away_score"
+    t.integer  "attendance"
+    t.string   "officials"
+    t.boolean  "overtime"
+    t.boolean  "playoff"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "players", force: true do |t|
     t.string   "name"
     t.datetime "created_at"
@@ -72,5 +121,23 @@ ActiveRecord::Schema.define(version: 20150424132427) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "users", force: true do |t|
+    t.string   "email",                  limit: nil, default: "", null: false
+    t.string   "encrypted_password",     limit: nil, default: "", null: false
+    t.string   "reset_password_token",   limit: nil
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer  "sign_in_count",                      default: 0,  null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.inet     "current_sign_in_ip"
+    t.inet     "last_sign_in_ip"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
+  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
 end

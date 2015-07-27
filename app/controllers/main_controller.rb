@@ -1,6 +1,6 @@
 class MainController < ApplicationController
   def index
-    #Scraper.scrape_stats
+    Scraper.daily_box_gids(12,25,2014)
   end
   
   def compare_chart
