@@ -7,11 +7,11 @@ class Scraper
     html_in.to_s.gsub(/(\<.*?\>)/,'')
   end
   
-    def self.box_scraper(game_ids)
+    def self.box_scraper(game_ids, game=nil)
     base_url = "http://www.basketball-reference.com"
     stat_lines = []
     
-    game_ids.each do |gid|
+    [*game_ids].each do |gid|
       url = base_url + gid
       
       doc = Nokogiri::HTML(open(url))
@@ -20,6 +20,23 @@ class Scraper
       date = doc.xpath('//table[contains(@class, "border_gray")]//td[contains(@class, "small_text")]')
       date = get_disp_html(date.to_s.split('<br>')[0])#.gsub(/<\/?[^>]*>/,'')
       game_date = DateTime.strptime(date, "%I:%M %p, %B %d, %Y")
+      
+      away_record = get_disp_html(doc.xpath('//*[@id="page_content"]/table/tr/td/div[2]/div[1]/h2[1]')).to_s.match(/\d+\-\d+/).to_s
+      home_record = get_disp_html(doc.xpath('//*[@id="page_content"]/table/tr/td/div[2]/div[5]/h2[1]')).to_s.match(/\d+\-\d+/).to_s
+      
+      attend = get_disp_html(doc.xpath('//*[@id="page_content"]/table/tr[1]/td[1]/div[2]/table[1]/tr[3]/td[2]')).gsub!(',','')
+      officials = get_disp_html(doc.xpath('//*[@id="page_content"]/table/tr[1]/td[1]/div[2]/table/tr[2]/td[2]')).to_s.strip
+
+      if !get_disp_html(doc.xpath('//*[@id="page_content"]/table/tr[1]/td[1]/div[1]/div[1]/table[1]/tr[1]/td[1]/strong')).to_s.blank?
+        playoffs = true
+      else
+        playoffs = false
+      end
+
+      game.update!(game_date: game_date, home_wins: home_record.split('-')[0], home_losses: home_record.split('-')[1],
+                   away_wins: away_record.split('-')[0], away_losses: away_record.split('-')[1], attendance: attend,
+                   officials: officials, playoff: playoffs
+                   )
 
       stats.each_with_index do |row, index|
             cols = row.search('td').map{ |x| x.to_s.gsub(/(\<.*\>(?!$)|\<\/td\>$)/,'')} #.map(&:to_s) #stripping nil values
@@ -34,6 +51,7 @@ class Scraper
             s = Boxscore.find_or_create_by(
               game_date: game_date,
               player: Player.find_or_create_by(name: name[0].to_s),
+              game: game,
               player_name: name[0],
               minutes: cols[1].split(':')[0],
               seconds: cols[1].split(':')[1],
@@ -57,10 +75,7 @@ class Scraper
               points: cols[19],
               plus_minus: cols[20]
               )
-              puts vals
-              #vals[:player_name].nil? ? nil : stat_lines << vals
           end
-       #NBA_Game_Log.save_game_logs(stat_lines)
     end
     
   end
@@ -70,25 +85,29 @@ class Scraper
     doc = Nokogiri::HTML(open(url))
 
     games = doc.xpath('//div[@id="boxes"]/table/tr/td/table')
-    puts games.count
-    puts games.class
-    puts games.first.class
-    #puts doc.xpath('//*[@id="boxes"]/table//tr[1]/td[1]/table//tr[1]/td/table//tr[1]/td[1]')
-    #puts doc.xpath('//*[@id="boxes"]/table//tr[1]/td[1]/table//tr[1]/td/table//tr[1]/td[2]')
     
     games.each do |game|                     
-      puts game.xpath('./tr[1]/td[1]/table/tr[1]/td[1]').to_s.match(/[A-Z]{3}/) #away team
-      puts get_disp_html(game.xpath('./tr[1]/td[1]/table/tr[1]/td[2]')) #away team score
-      puts game.xpath('./tr[1]/td[1]/table/tr[2]/td[1]').to_s.match(/[A-Z]{3}/) #home team
-      puts get_disp_html(game.xpath('./tr[1]/td[1]/table/tr[2]/td[2]')) #home team score
-      puts 'woop'
-    end
-  #/td[1]/table/tr[1]/td/table//tr[1]/td[1]
-    return
+      away_team_abbr = game.xpath('./tr[1]/td[1]/table/tr[1]/td[1]').to_s.match(/[A-Z]{3}/).to_s #away team abbr
+      a_score = get_disp_html(game.xpath('./tr[1]/td[1]/table/tr[1]/td[2]')) #away team score
+      home_team_abbr = game.xpath('./tr[1]/td[1]/table/tr[2]/td[1]').to_s.match(/[A-Z]{3}/).to_s #home team abbr
+      h_score = get_disp_html(game.xpath('./tr[1]/td[1]/table/tr[2]/td[2]')) #home team score
+      game_id = game.xpath('./tr[1]/td[1]/table/tr[1]/td[3]/a/@href').first.value
+      
+      if get_disp_html(game.xpath('./tr[2]/td[1]/table/tr[1]/td[6]')) == 'OT'
+        ot = true
+      else
+        ot = false
+      end
 
-    game_ids = doc.xpath('//a[contains(@href, "/boxscores/20")]').map { |link| link['href'] }
+      g = Game.where( home_team: home_team_abbr, away_team: away_team_abbr,
+                              home_score: h_score, away_score: a_score,
+                              bbr_gid: game_id, overtime: ot).first_or_create
+                              
+      puts 'woop'
+      
+      self.box_scraper(game_id, g)
+    end
     
-    self.box_scraper(game_ids)#, year.to_s+'-'+month.to_s+'-'+day.to_s)
   end
   
   def self.scrape_adv_stats()
