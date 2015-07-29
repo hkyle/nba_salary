@@ -15,8 +15,10 @@ class Scraper
       url = base_url + gid
       
       doc = Nokogiri::HTML(open(url))
-      vals = {}
-      stats = doc.xpath('//table[contains(@id, "_basic")]//tbody//tr[@class=""]') #no class, skips headers
+
+      home_basic_stats = doc.xpath('//table[contains(@id, "'+game.home_team.abbr+'_basic")]//tbody//tr[@class=""]') 
+      away_basic_stats = doc.xpath('//table[contains(@id, "'+game.away_team.abbr+'_basic")]//tbody//tr[@class=""]') 
+
       date = doc.xpath('//table[contains(@class, "border_gray")]//td[contains(@class, "small_text")]')
       date = get_disp_html(date.to_s.split('<br>')[0])#.gsub(/<\/?[^>]*>/,'')
       game_date = DateTime.strptime(date, "%I:%M %p, %B %d, %Y")
@@ -38,46 +40,16 @@ class Scraper
                    officials: officials, playoff: playoffs
                    )
 
-      stats.each_with_index do |row, index|
-            cols = row.search('td').map{ |x| x.to_s.gsub(/(\<.*\>(?!$)|\<\/td\>$)/,'')} #.map(&:to_s) #stripping nil values
-
-            name = row.search('td/a/text()').map(&:to_s)
-            
-            #don't want stats for these cases
-            if name.nil? || cols[1] == 'Did Not Play'
-               next
-            end
-            
-            s = Boxscore.find_or_create_by(
-              game_date: game_date,
-              player: Player.find_or_create_by(name: name[0].to_s),
-              game: game,
-              player_name: name[0],
-              minutes: cols[1].split(':')[0],
-              seconds: cols[1].split(':')[1],
-              fgm: cols[2],
-              fga: cols[3],
-              fg_pct: cols[4].presence,
-              tpm: cols[5],
-              tpa: cols[6],
-              tp_pct: cols[7].presence,
-              ftm: cols[8],
-              fta: cols[9],
-              ft_pct: cols[10].presence,
-              orb: cols[11],
-              drb: cols[12],
-              trb: cols[13],
-              assists: cols[14],
-              steals: cols[15],
-              blocks: cols[16],
-              tov: cols[17],
-              pf: cols[18],
-              points: cols[19],
-              plus_minus: cols[20]
-              )
-          end
-    end
+      
+      self.insert_basic_box_stats(stats: home_basic_stats,
+                             team: game.home_team,
+                             game: game)
+                             
+      self.insert_basic_box_stats(stats: away_basic_stats,
+                             team: game.away_team,
+                             game: game)
     
+    end
   end
   
   def self.daily_box_gids(month, day, year=2015)
@@ -86,7 +58,7 @@ class Scraper
 
     games = doc.xpath('//div[@id="boxes"]/table/tr/td/table')
     
-    games.each do |game|                     
+    [*games].each do |game|                     
       away_team_abbr = game.xpath('./tr[1]/td[1]/table/tr[1]/td[1]').to_s.match(/[A-Z]{3}/).to_s #away team abbr
       a_score = get_disp_html(game.xpath('./tr[1]/td[1]/table/tr[1]/td[2]')) #away team score
       home_team_abbr = game.xpath('./tr[1]/td[1]/table/tr[2]/td[1]').to_s.match(/[A-Z]{3}/).to_s #home team abbr
@@ -99,7 +71,7 @@ class Scraper
         ot = false
       end
 
-      g = Game.where( home_team: home_team_abbr, away_team: away_team_abbr,
+      g = Game.where( home_team_id: Team.find_or_create_by(abbr: home_team_abbr), away_team_id: Team.find_or_create_by(abbr: away_team_abbr),
                               home_score: h_score, away_score: a_score,
                               bbr_gid: game_id, overtime: ot).first_or_create
                               
@@ -174,6 +146,47 @@ class Scraper
              
           end
       end
+  end
+  
+  def self.insert_basic_box_stats(args)
+    args[:stats].each_with_index do |row, index|
+            cols = row.search('td').map{ |x| x.to_s.gsub(/(\<.*\>(?!$)|\<\/td\>$)/,'')} #.map(&:to_s) #stripping nil values
+
+            name = row.search('td/a/text()').map(&:to_s)
+            
+            #don't want stats for these cases
+            if name.nil? || cols[1] == 'Did Not Play'
+               next
+            end
+            
+            s = Boxscore.find_or_create_by(
+              player: Player.find_or_create_by(name: name[0].to_s),
+              game: args[:game],
+              player_name: name[0],
+              minutes: cols[1].split(':')[0],
+              seconds: cols[1].split(':')[1],
+              fgm: cols[2],
+              fga: cols[3],
+              fg_pct: cols[4].presence,
+              tpm: cols[5],
+              tpa: cols[6],
+              tp_pct: cols[7].presence,
+              ftm: cols[8],
+              fta: cols[9],
+              ft_pct: cols[10].presence,
+              orb: cols[11],
+              drb: cols[12],
+              trb: cols[13],
+              assists: cols[14],
+              steals: cols[15],
+              blocks: cols[16],
+              tov: cols[17],
+              pf: cols[18],
+              points: cols[19],
+              plus_minus: cols[20],
+              team: args[:team]
+              )
+    end
   end
     
 end

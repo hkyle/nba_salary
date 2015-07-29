@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150728164153) do
+ActiveRecord::Schema.define(version: 20150729170052) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -51,7 +51,6 @@ ActiveRecord::Schema.define(version: 20150728164153) do
 
   create_table "boxscores", force: true do |t|
     t.integer  "player_id"
-    t.datetime "game_date"
     t.string   "player_name"
     t.integer  "minutes"
     t.integer  "seconds"
@@ -77,10 +76,12 @@ ActiveRecord::Schema.define(version: 20150728164153) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "game_id"
+    t.integer  "team_id"
   end
 
   add_index "boxscores", ["game_id"], name: "index_boxscores_on_game_id", using: :btree
   add_index "boxscores", ["player_id"], name: "index_boxscores_on_player_id", using: :btree
+  add_index "boxscores", ["team_id"], name: "index_boxscores_on_team_id", using: :btree
 
   create_table "contracts", force: true do |t|
     t.integer  "player_id"
@@ -96,11 +97,9 @@ ActiveRecord::Schema.define(version: 20150728164153) do
 
   create_table "games", force: true do |t|
     t.datetime "game_date"
-    t.string   "home_team"
     t.integer  "home_wins"
     t.integer  "home_losses"
     t.integer  "home_score"
-    t.string   "away_team"
     t.integer  "away_wins"
     t.integer  "away_losses"
     t.integer  "away_score"
@@ -111,6 +110,8 @@ ActiveRecord::Schema.define(version: 20150728164153) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "bbr_gid"
+    t.integer  "home_team_id"
+    t.integer  "away_team_id"
   end
 
   create_table "players", force: true do |t|
