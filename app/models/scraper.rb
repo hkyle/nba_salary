@@ -17,7 +17,10 @@ class Scraper
       doc = Nokogiri::HTML(open(url))
 
       home_basic_stats = doc.xpath('//table[contains(@id, "'+game.home_team.abbr+'_basic")]//tbody//tr[@class=""]') 
-      away_basic_stats = doc.xpath('//table[contains(@id, "'+game.away_team.abbr+'_basic")]//tbody//tr[@class=""]') 
+      away_basic_stats = doc.xpath('//table[contains(@id, "'+game.away_team.abbr+'_basic")]//tbody//tr[@class=""]')
+      
+      home_adv_stats = doc.xpath('//table[contains(@id, "'+game.home_team.abbr+'_advanced")]//tbody//tr[@class=""]') 
+      away_adv_stats = doc.xpath('//table[contains(@id, "'+game.away_team.abbr+'_advanced")]//tbody//tr[@class=""]') 
 
       date = doc.xpath('//table[contains(@class, "border_gray")]//td[contains(@class, "small_text")]')
       date = get_disp_html(date.to_s.split('<br>')[0])#.gsub(/<\/?[^>]*>/,'')
@@ -41,11 +44,13 @@ class Scraper
                    )
 
       
-      self.insert_basic_box_stats(stats: home_basic_stats,
+      self.insert_box_stats(basic_stats: home_basic_stats,
+                             adv_stats: home_adv_stats,
                              team: game.home_team,
                              game: game)
                              
-      self.insert_basic_box_stats(stats: away_basic_stats,
+      self.insert_box_stats(basic_stats: away_basic_stats,
+                             adv_stats: away_adv_stats,
                              team: game.away_team,
                              game: game)
     
@@ -75,8 +80,6 @@ class Scraper
                               home_score: h_score, away_score: a_score,
                               bbr_gid: game_id, overtime: ot).first_or_create
                               
-      puts 'woop'
-      
       self.box_scraper(game_id, g)
     end
     
@@ -105,7 +108,7 @@ class Scraper
               #change blank columns to 0
               cols.map!{|e| e.blank? ? 0 : e }
               
-              s = AdvancedStat.find_or_create_by(year: '2014-2015', player_id: p.id, pos: cols[2], age: cols[3], games: cols[5],
+              s = SeasonStat.find_or_create_by(year: '2014-2015', player_id: p.id, pos: cols[2], age: cols[3], games: cols[5],
                   mp: cols[6], per: cols[7], ts_pct: cols[8], three_par: cols[9], ftr: cols[10], orb_pct: cols[11], drb_pct: cols[12],
                   trb_pct: cols[13], ast_pct: cols[14], stl_pct: cols[15], blk_pct: cols[16], tov_pct: cols[17], usg_pct: cols[18],
                   ows: cols[20], dws: cols[21], ws: cols[22], ws_48: cols[23], obpm: cols[25], dbpm: cols[26], bpm: cols[27], vorp: cols[28]
@@ -148,8 +151,8 @@ class Scraper
       end
   end
   
-  def self.insert_basic_box_stats(args)
-    args[:stats].each_with_index do |row, index|
+  def self.insert_box_stats(args)
+    args[:basic_stats].each_with_index do |row, index|
             cols = row.search('td').map{ |x| x.to_s.gsub(/(\<.*\>(?!$)|\<\/td\>$)/,'')} #.map(&:to_s) #stripping nil values
 
             name = row.search('td/a/text()').map(&:to_s)
@@ -158,6 +161,15 @@ class Scraper
             if name.nil? || cols[1] == 'Did Not Play'
                next
             end
+            
+            adv_cols = args[:adv_stats][index].search('td').map{ |x| x.to_s.gsub(/(\<.*\>(?!$)|\<\/td\>$)/,'')}
+            name_check = args[:adv_stats][index].search('td/a/text()').map(&:to_s)
+
+            if name != name_check
+              raise 'Basic and Advanced Stats not synced!'
+            end
+            
+            return
             
             s = Boxscore.find_or_create_by(
               player: Player.find_or_create_by(name: name[0].to_s),

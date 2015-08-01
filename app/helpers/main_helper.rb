@@ -91,11 +91,11 @@ module MainHelper
                   "{ name: ' #{t.abbr}',\n color: 'rgba(#{rand(0..256).to_s}, #{rand(0..256).to_s}, #{rand(0..256).to_s}, 1)',\n data: ["
               
               t.contracts.year(@chart.year).each_with_index do |c, ix|
-              if !c.player.advanced_stats.where('mp > ?', 200).first.nil?
+              if !c.player.season_stats.where('mp > ?', 200).first.nil?
                   output = output + 
                   " { name: '#{groom_name(c.player.name)} (#{c.team.abbr})',\n" + 
                   "x: #{c.salary.floor.to_s},\n" + 
-                  "y: #{c.player.advanced_stats.first[@chart.stat].to_s}},\n"
+                  "y: #{c.player.season_stats.first[@chart.stat].to_s}},\n"
               end
               
             end

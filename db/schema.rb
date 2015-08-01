@@ -11,43 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150729170052) do
+ActiveRecord::Schema.define(version: 20150731185434) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "advanced_stats", force: true do |t|
-    t.integer  "player_id"
-    t.string   "year"
-    t.decimal  "games"
-    t.decimal  "mp"
-    t.decimal  "per"
-    t.decimal  "ts_pct"
-    t.decimal  "three_par"
-    t.decimal  "ftr"
-    t.decimal  "orb_pct"
-    t.decimal  "drb_pct"
-    t.decimal  "trb_pct"
-    t.decimal  "ast_pct"
-    t.decimal  "stl_pct"
-    t.decimal  "blk_pct"
-    t.decimal  "tov_pct"
-    t.decimal  "usg_pct"
-    t.decimal  "ows"
-    t.decimal  "dws"
-    t.decimal  "ws"
-    t.decimal  "ws_48"
-    t.decimal  "obpm"
-    t.decimal  "dbpm"
-    t.decimal  "bpm"
-    t.decimal  "vorp"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "age"
-    t.string   "pos"
-  end
-
-  add_index "advanced_stats", ["player_id"], name: "index_advanced_stats_on_player_id", using: :btree
 
   create_table "boxscores", force: true do |t|
     t.integer  "player_id"
@@ -119,6 +86,39 @@ ActiveRecord::Schema.define(version: 20150729170052) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "season_stats", force: true do |t|
+    t.integer  "player_id"
+    t.string   "year"
+    t.decimal  "games"
+    t.decimal  "mp"
+    t.decimal  "per"
+    t.decimal  "ts_pct"
+    t.decimal  "three_par"
+    t.decimal  "ftr"
+    t.decimal  "orb_pct"
+    t.decimal  "drb_pct"
+    t.decimal  "trb_pct"
+    t.decimal  "ast_pct"
+    t.decimal  "stl_pct"
+    t.decimal  "blk_pct"
+    t.decimal  "tov_pct"
+    t.decimal  "usg_pct"
+    t.decimal  "ows"
+    t.decimal  "dws"
+    t.decimal  "ws"
+    t.decimal  "ws_48"
+    t.decimal  "obpm"
+    t.decimal  "dbpm"
+    t.decimal  "bpm"
+    t.decimal  "vorp"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "age"
+    t.string   "pos"
+  end
+
+  add_index "season_stats", ["player_id"], name: "index_season_stats_on_player_id", using: :btree
 
   create_table "teams", force: true do |t|
     t.string   "abbr"

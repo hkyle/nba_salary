@@ -28,7 +28,7 @@
 		<div class="row form-row">
 			<%= form_tag("/stats_chart", method: "get") do %>
 			<div class="col-md-offset-1 col-md-8">
-				Compare Salary to Advanced Stats: <%= select_tag(:stat, options_for_select(StatChart.stat_list.collect {|p| [ p[:text], p[:val] ] }, params[:stat]))%>
+				Compare Salary to Advanced Season Stats: <%= select_tag(:stat, options_for_select(StatChart.stat_list.collect {|p| [ p[:text], p[:val] ] }, params[:stat]))%>
 			</div>
 			<div class="col-md-2">
 				<%= submit_tag("Go!", :name => '', :class => 'btn-primary btn-block form-btn') %>
