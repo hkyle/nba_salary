@@ -85,8 +85,8 @@ class Scraper
     
   end
   
-  def self.scrape_adv_stats()
-    url = 'http://www.basketball-reference.com/leagues/NBA_2015_advanced.html'
+  def self.scrape_adv_stats(year)
+    url = 'http://www.basketball-reference.com/leagues/NBA_'+year.to_s+'_advanced.html'
 
       doc = Nokogiri::HTML(open(url))
       stats = doc.xpath('//table[contains(@id, "advanced")]//tbody//tr')
@@ -95,6 +95,8 @@ class Scraper
           if row['class'] == 'full_table'
             cols = row.search('td').map{ |x| get_disp_html(x)} #stripping everything in brackets!
             
+            player_url = row.xpath('./td/a/@href').first.value
+            puts player_url
             #0 => rownum, 1 => player name, 2 => pos, 3 => age, 4 => team, 5 => games played
             #6 => minutes, 7 => PER, 8 => TS%, 9 => 3PAr, 10 => FTr, 11 => ORB%
             #12 => DRB%, 13 => TRB%, 14 => AST%, 15 => STL%, 16 => BLK%
@@ -102,13 +104,13 @@ class Scraper
             #25 => OBPM, 26 => DBPM, 27 => BPM, 28 => VORP
             # empty columns - 19, 24
 
-            p = Player.find_or_create_by(name: cols[1].to_s)
+            p = Player.find_or_create_by(name: cols[1].to_s, bbr_pid: player_url)
             
             if !p.nil?
               #change blank columns to 0
               cols.map!{|e| e.blank? ? 0 : e }
               
-              s = SeasonStat.find_or_create_by(year: '2014-2015', player_id: p.id, pos: cols[2], age: cols[3], games: cols[5],
+              s = SeasonStat.find_or_create_by(year: (year-1).to_s+'-'+year.to_s, player_id: p.id, pos: cols[2], age: cols[3], games: cols[5],
                   mp: cols[6], per: cols[7], ts_pct: cols[8], three_par: cols[9], ftr: cols[10], orb_pct: cols[11], drb_pct: cols[12],
                   trb_pct: cols[13], ast_pct: cols[14], stl_pct: cols[15], blk_pct: cols[16], tov_pct: cols[17], usg_pct: cols[18],
                   ows: cols[20], dws: cols[21], ws: cols[22], ws_48: cols[23], obpm: cols[25], dbpm: cols[26], bpm: cols[27], vorp: cols[28]
@@ -134,9 +136,10 @@ class Scraper
           #only interested in the salaries for next 4 years
           if row['class'].blank?
             cols = row.search('td')[1,7].map{ |x| get_disp_html(x)} #stripping everything in brackets!
+            player_url = row.xpath('./td/a/@href').first.value
 
              if cols[0].nil? == false #make sure we have a player name
-               p = Player.find_or_create_by(name: cols[0].to_s)
+               p = Player.find_or_create_by(name: cols[0].to_s, bbr_pid: player_url)
                t = Team.find_or_create_by(abbr: cols[1].to_s)
                
                #check if each element (year) has salary given
@@ -152,11 +155,15 @@ class Scraper
   end
   
   def self.insert_box_stats(args)
+    args[:basic_stats] = args[:basic_stats].to_a.sort!{ |a, b| a.xpath('./td//a').text <=> b.xpath('./td//a').text}
+    args[:adv_stats] = args[:adv_stats].to_a.sort!{ |a, b| a.xpath('./td//a').text <=> b.xpath('./td//a').text}
+    
     args[:basic_stats].each_with_index do |row, index|
             cols = row.search('td').map{ |x| x.to_s.gsub(/(\<.*\>(?!$)|\<\/td\>$)/,'')} #.map(&:to_s) #stripping nil values
 
             name = row.search('td/a/text()').map(&:to_s)
-            
+            player_url = row.xpath('./td/a/@href').first.value
+
             #don't want stats for these cases
             if name.nil? || cols[1] == 'Did Not Play'
                next
@@ -166,17 +173,20 @@ class Scraper
             name_check = args[:adv_stats][index].search('td/a/text()').map(&:to_s)
 
             if name != name_check
+              puts args[:game].bbr_gid
+              puts name
+              puts name_check
               raise 'Basic and Advanced Stats not synced!'
             end
             
-            return
-            
             s = Boxscore.find_or_create_by(
-              player: Player.find_or_create_by(name: name[0].to_s),
+              player: Player.find_or_create_by(name: name[0].to_s, bbr_pid: player_url),
               game: args[:game],
               player_name: name[0],
               minutes: cols[1].split(':')[0],
-              seconds: cols[1].split(':')[1],
+              seconds: cols[1].split(':')[1])
+              
+            s.update!(
               fgm: cols[2],
               fga: cols[3],
               fg_pct: cols[4].presence,
@@ -196,7 +206,21 @@ class Scraper
               pf: cols[18],
               points: cols[19],
               plus_minus: cols[20],
-              team: args[:team]
+              team: args[:team],
+              ts_pct: adv_cols[2].presence,
+              efg_pct: adv_cols[3].presence,
+              three_par: adv_cols[4].presence,
+              ftr: adv_cols[5].presence,
+              orb_pct: adv_cols[6].presence,
+              drb_pct: adv_cols[7].presence,
+              trb_pct: adv_cols[8].presence,
+              ast_pct: adv_cols[9].presence,
+              stl_pct: adv_cols[10].presence,
+              blk_pct: adv_cols[11].presence,
+              tov_pct: adv_cols[12].presence,
+              usg_pct: adv_cols[13].presence,
+              o_rtg: adv_cols[14],
+              d_rtg: adv_cols[15]
               )
     end
   end

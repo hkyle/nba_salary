@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150731185434) do
+ActiveRecord::Schema.define(version: 20150804195241) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,6 +44,20 @@ ActiveRecord::Schema.define(version: 20150731185434) do
     t.datetime "updated_at"
     t.integer  "game_id"
     t.integer  "team_id"
+    t.decimal  "ts_pct"
+    t.decimal  "efg_pct"
+    t.decimal  "three_par"
+    t.decimal  "ftr"
+    t.decimal  "orb_pct"
+    t.decimal  "drb_pct"
+    t.decimal  "trb_pct"
+    t.decimal  "ast_pct"
+    t.decimal  "stl_pct"
+    t.decimal  "blk_pct"
+    t.decimal  "tov_pct"
+    t.decimal  "usg_pct"
+    t.integer  "o_rtg"
+    t.integer  "d_rtg"
   end
 
   add_index "boxscores", ["game_id"], name: "index_boxscores_on_game_id", using: :btree
@@ -85,6 +99,7 @@ ActiveRecord::Schema.define(version: 20150731185434) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "bbr_pid"
   end
 
   create_table "season_stats", force: true do |t|
