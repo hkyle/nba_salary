@@ -93,15 +93,15 @@ class Scraper
 
       stats.each_with_index do |row, index|
           if row['class'] == 'full_table'
-            cols = row.search('td').map{ |x| get_disp_html(x)} #stripping everything in brackets!
-            
             player_url = row.xpath('./td/a/@href').first.value
-            puts player_url
-            #0 => rownum, 1 => player name, 2 => pos, 3 => age, 4 => team, 5 => games played
-            #6 => minutes, 7 => PER, 8 => TS%, 9 => 3PAr, 10 => FTr, 11 => ORB%
-            #12 => DRB%, 13 => TRB%, 14 => AST%, 15 => STL%, 16 => BLK%
-            #17 => TOV%, 18 => USG%, 20 => OWS, 21 => DWS, 22 => WS, 23 => WS/48
-            #25 => OBPM, 26 => DBPM, 27 => BPM, 28 => VORP
+            print player_url
+            cols = row.search('td').map{ |x| x.text }
+            print cols
+            #0 => player name, 1 => pos, 2 => age, 3 => team, 4 => games played
+            #5 => minutes, 6 => PER, 7 => TS%, 8 => 3PAr, 9 => FTr, 10 => ORB%
+            #11 => DRB%, 12 => TRB%, 13 => AST%, 14 => STL%, 15 => BLK%
+            #16 => TOV%, 17 => USG%, 19 => OWS, 20 => DWS, 21 => WS, 22 => WS/48
+            #24 => OBPM, 25 => DBPM, 26 => BPM, 27 => VORP
             # empty columns - 19, 24
 
             p = Player.find_or_create_by(name: cols[1].to_s, bbr_pid: player_url)
@@ -110,15 +110,12 @@ class Scraper
               #change blank columns to 0
               cols.map!{|e| e.blank? ? 0 : e }
               
-              s = SeasonStat.find_or_create_by(year: (year-1).to_s+'-'+year.to_s, player_id: p.id, pos: cols[2], age: cols[3], games: cols[5],
-                  mp: cols[6], per: cols[7], ts_pct: cols[8], three_par: cols[9], ftr: cols[10], orb_pct: cols[11], drb_pct: cols[12],
-                  trb_pct: cols[13], ast_pct: cols[14], stl_pct: cols[15], blk_pct: cols[16], tov_pct: cols[17], usg_pct: cols[18],
-                  ows: cols[20], dws: cols[21], ws: cols[22], ws_48: cols[23], obpm: cols[25], dbpm: cols[26], bpm: cols[27], vorp: cols[28]
+              s = SeasonStat.find_or_create_by(year: (year-1).to_s+'-'+year.to_s, player_id: p.id, pos: cols[1], age: cols[2], games: cols[4],
+                  mp: cols[5], per: cols[6], ts_pct: cols[7], three_par: cols[8], ftr: cols[9], orb_pct: cols[10], drb_pct: cols[11],
+                  trb_pct: cols[12], ast_pct: cols[13], stl_pct: cols[14], blk_pct: cols[15], tov_pct: cols[16], usg_pct: cols[17],
+                  ows: cols[19], dws: cols[20], ws: cols[21], ws_48: cols[22], obpm: cols[24], dbpm: cols[25], bpm: cols[26], vorp: cols[27]
                   )
-            end
-            
-            
-            
+            end            
           end
       end
   end

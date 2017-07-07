@@ -1,4 +1,4 @@
-class CreateBoxscores < ActiveRecord::Migration
+class CreateBoxscores < ActiveRecord::Migration[5.0]
   def change
     create_table :boxscores do |t|
       t.belongs_to :player, index: true

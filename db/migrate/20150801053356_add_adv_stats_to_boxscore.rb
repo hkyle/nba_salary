@@ -1,4 +1,4 @@
-class AddAdvStatsToBoxscore < ActiveRecord::Migration
+class AddAdvStatsToBoxscore < ActiveRecord::Migration[5.0]
   def change
     add_column :boxscores, :ts_pct, :decimal
     add_column :boxscores, :efg_pct, :decimal

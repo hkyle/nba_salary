@@ -1,4 +1,4 @@
-class AddStatsTable < ActiveRecord::Migration
+class AddStatsTable < ActiveRecord::Migration[5.0]
   def change
 
     create_table :advanced_stats do |t|

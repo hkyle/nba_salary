@@ -1,4 +1,4 @@
-class FixContractTable < ActiveRecord::Migration
+class FixContractTable < ActiveRecord::Migration[5.0]
   def change
     #previous migration created the team_id wrong, let's just fix it
     drop_table :contracts

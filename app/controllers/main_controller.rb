@@ -17,7 +17,7 @@ class MainController < ApplicationController
   
   def stats_chart
     @chart = StatChart.new(
-                      {year: '2014-2015', stat: params[:stat]}
+                      {year: '2016-2017', stat: params[:stat]}
                       )
   end
 end
