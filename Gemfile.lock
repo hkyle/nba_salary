@@ -103,6 +103,7 @@ GEM
     pg (0.21.0)
     pg (0.21.0-x86-mingw32)
     public_suffix (2.0.5)
+    puma (3.9.1)
     rack (2.0.3)
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -182,6 +183,7 @@ DEPENDENCIES
   lazy_high_charts
   nokogiri
   pg
+  puma
   rails
   rails_12factor
   sass-rails

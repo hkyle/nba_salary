@@ -129,10 +129,10 @@ class Scraper
       #this will get the year header, e.g. "2014-15", and split that out to only the first year (2014)
       first_year = get_disp_html(doc.xpath('//table[contains(@id, "contracts")]//tbody//tr//th[contains(@data-stat, "y1")]').first).split('-')[0].to_i
 
-      stats.each_with_index do |row, index|
+      stats[0..0].each_with_index do |row, index|
           #only interested in the salaries for next 4 years
           if row['class'].blank?
-            cols = row.search('td')[1,7].map{ |x| get_disp_html(x)} #stripping everything in brackets!
+            cols = row.search('td')[0,6].map{ |x| x.text } #stripping everything in brackets!
             player_url = row.xpath('./td/a/@href').first.value
 
              if cols[0].nil? == false #make sure we have a player name

@@ -4,7 +4,7 @@
 		<div class="row form-row">
 			<%= form_tag("/league_chart", method: "get") do %>
 			<div class="col-md-offset-1 col-md-8">
-				Compare All Team Salaries: <%= select_tag(:year, options_for_select(Contract.uniq.pluck(:year).sort, params[:year]))%>
+				Compare All Team Salaries: <%= select_tag(:year, options_for_select(Contract.all.uniq.pluck(:year).sort, params[:year]))%>
 			</div>
 			<div class="col-md-2">
 				<%= submit_tag("Go!", :name => '', :class => 'btn-primary btn-block form-btn') %>
@@ -15,9 +15,9 @@
 		<div class="row form-row">
 			<%= form_tag("/compare_chart", method: "get") do %>
 			<div class="col-md-offset-1 col-md-8">
-				Compare Two Teams Salaries: <%= select_tag(:team1, options_for_select(Team.uniq.pluck(:abbr).sort, params[:team1]))%>
-				<%= select_tag(:team2, options_for_select(Team.uniq.pluck(:abbr).sort, if params[:team2].nil? then 'GSW' else params[:team2] end))%>
-				<%= select_tag(:year, options_for_select(Contract.uniq.pluck(:year).sort, params[:year]))%>
+				Compare Two Teams Salaries: <%= select_tag(:team1, options_for_select(Team.all.uniq.pluck(:abbr).sort, params[:team1]))%>
+				<%= select_tag(:team2, options_for_select(Team.all.uniq.pluck(:abbr).sort, if params[:team2].nil? then 'GSW' else params[:team2] end))%>
+				<%= select_tag(:year, options_for_select(Contract.all.uniq.pluck(:year).sort, params[:year]))%>
 			</div>
 			<div class="col-md-2">
 				<%= submit_tag("Go!", :name => '', :class => 'btn-primary btn-block form-btn') %>
